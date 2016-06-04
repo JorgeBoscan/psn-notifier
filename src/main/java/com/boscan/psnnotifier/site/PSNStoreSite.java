@@ -9,9 +9,9 @@ import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import java.io.File;
 import java.util.List;
 
-public class PSNStore {
+public class PSNStoreSite {
 
-    public static boolean processPSNStore() throws InterruptedException {
+    public boolean processPSNStore() throws InterruptedException {
         final WebDriver webDriver = prepareDriver();
         webDriver.get(Configuration.getInstance().getPsnStoreUrl());
         Thread.sleep(25 * 1000);
@@ -28,7 +28,7 @@ public class PSNStore {
         return isFlashSale;
     }
 
-    private static WebDriver prepareDriver() {
+    private WebDriver prepareDriver() {
         File file = new File(Configuration.getInstance().getPhantomJsPath());
         System.setProperty("phantomjs.binary.path", file.getAbsolutePath());
 

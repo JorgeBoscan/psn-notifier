@@ -6,14 +6,15 @@ import com.boscan.psnnotifier.model.Member;
 import com.boscan.psnnotifier.model.PSPrice;
 import com.boscan.psnnotifier.notification.Notification;
 import com.boscan.psnnotifier.notification.PushBulletNotification;
-import com.boscan.psnnotifier.site.PSNStore;
-import com.boscan.psnnotifier.site.PSPrices;
+import com.boscan.psnnotifier.site.PSNStoreSite;
+import com.boscan.psnnotifier.site.PSPricesSite;
 import com.boscan.psnnotifier.util.PSNUtil;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +22,8 @@ import java.util.Date;
 import java.util.List;
 
 public class PSNNotifier {
+
+    static Logger logger = Logger.getLogger(PSNNotifier.class);
 
     public static void main(String args[]) throws IOException {
         String jsonData = Files.toString(new File(Configuration.getInstance().getDataJsonPath()), Charsets.UTF_8);
@@ -43,7 +46,8 @@ public class PSNNotifier {
         boolean isFlashSale = false;
 
         try {
-            isFlashSale = PSNStore.processPSNStore();
+            PSNStoreSite psnStoreSite = new PSNStoreSite();
+            isFlashSale = psnStoreSite.processPSNStore();
         } catch (Exception e) {
             e.printStackTrace();
             // TODO
@@ -53,7 +57,8 @@ public class PSNNotifier {
 
     private static void validateGameDiscount(Member member, Game game) {
         try {
-            PSPrice psPrice = PSPrices.processPSPrices(game.getId());
+            PSPricesSite psPricesSite = new PSPricesSite();
+            PSPrice psPrice = psPricesSite.processPSPrices(game.getId());
             boolean isNew = (game.getLastUpdateDate() == null);
             boolean sendMessage = fillGameData(game, psPrice, isNew);
 
@@ -82,14 +87,15 @@ public class PSNNotifier {
     }
 
     private static boolean fillGameData(Game game, PSPrice psPrice, boolean isNew) {
+        logger.info("Processing: " + psPrice.getGameName());
         boolean sendMessage = false;
-        if (!isNew && PSNUtil.isNewPrice(game.getLowestPrice(), psPrice.getPsplusPrice())) {
+        if (!isNew && PSNUtil.isBetterPrice(game.getLowestPrice(), psPrice.getPsplusPrice())) {
             game.setLowestPrice(PSNUtil.parsePrice(psPrice.getPsplusPrice()));
             sendMessage = true;
-        } else if (!isNew && PSNUtil.isNewPrice(game.getLowestPrice(), psPrice.getDiscountedPrice())) {
+        } else if (!isNew && PSNUtil.isBetterPrice(game.getLowestPrice(), psPrice.getDiscountedPrice())) {
             game.setLowestPrice(PSNUtil.parsePrice(psPrice.getDiscountedPrice()));
             sendMessage = true;
-        } else if (!isNew && PSNUtil.isNewPrice(game.getLowestPrice(), psPrice.getPreviousPrice())) {
+        } else if (!isNew && PSNUtil.isBetterPrice(game.getLowestPrice(), psPrice.getPreviousPrice())) {
             game.setLowestPrice(PSNUtil.parsePrice(psPrice.getPreviousPrice()));
             sendMessage = true;
         }

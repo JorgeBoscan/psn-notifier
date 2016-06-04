@@ -9,9 +9,9 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 
-public class PSPrices {
+public class PSPricesSite {
 
-    public static PSPrice processPSPrices(String id) throws IOException {
+    public PSPrice processPSPrices(String id) throws IOException {
         Document doc = Jsoup.connect(Configuration.getInstance().getPsPricesUrl() + id).userAgent("Mozilla").get();
         Elements elements = doc.select(".content__game_card__offers").get(0).select("span");
 
@@ -39,7 +39,7 @@ public class PSPrices {
         return psPrice;
     }
 
-    private static void validatePreviousPriceValue(PSPrice psPrice) {
+    private void validatePreviousPriceValue(PSPrice psPrice) {
         if (psPrice.getPreviousPrice() == null
                 && psPrice.getDiscountedPrice() != null
                 && psPrice.getPsplusPrice() == null) {

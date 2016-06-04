@@ -1,8 +1,8 @@
 package com.boscan.psnnotifier.util;
 
 public class PSNUtil {
-    public static boolean isNewPrice(float oldValue, String newValue) {
-        return newValue.toUpperCase().contains("FREE") && oldValue != 0f || newValue != null && oldValue > Float.parseFloat(newValue.replaceAll("\\$", "").trim());
+    public static boolean isBetterPrice(float oldValue, String newValue) {
+        return newValue != null && newValue.toUpperCase().contains("FREE") && oldValue != 0f || newValue != null && oldValue > Float.parseFloat(newValue.replaceAll("\\$", "").trim());
     }
 
     public static float parsePrice(String price) {
