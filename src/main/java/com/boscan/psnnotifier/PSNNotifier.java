@@ -100,9 +100,25 @@ public class PSNNotifier {
         }
 
         game.setName(psPrice.getGameName());
-        game.setDiscountedPrice(PSNUtil.parsePrice(psPrice.getDiscountedPrice()));
-        game.setPsplusPrice(PSNUtil.parsePrice(psPrice.getPsplusPrice()));
-        game.setPreviousPrice(PSNUtil.parsePrice(psPrice.getPreviousPrice()));
+        if (PSNUtil.validateFree(psPrice.getDiscountedPrice())) {
+            game.setDiscountedFree(true);
+            game.setDiscountedPrice(0);
+        } else {
+            game.setDiscountedFree(false);
+            game.setDiscountedPrice(PSNUtil.parsePrice(psPrice.getDiscountedPrice()));
+        }
+        if (PSNUtil.validateFree(psPrice.getPsplusPrice())) {
+            game.setPsplusFree(true);
+            game.setPsplusPrice(0);
+        } else {
+            game.setPsplusFree(false);
+            game.setPsplusPrice(PSNUtil.parsePrice(psPrice.getPsplusPrice()));
+        }
+        if (PSNUtil.validateFree(psPrice.getPreviousPrice())) {
+            game.setPreviousPrice(0);
+        } else {
+            game.setPreviousPrice(PSNUtil.parsePrice(psPrice.getPreviousPrice()));
+        }
         game.setLastUpdateDate(new Date());
         return sendMessage;
     }
