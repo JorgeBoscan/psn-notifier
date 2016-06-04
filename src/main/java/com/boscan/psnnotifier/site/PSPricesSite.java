@@ -2,6 +2,7 @@ package com.boscan.psnnotifier.site;
 
 import com.boscan.psnnotifier.config.Configuration;
 import com.boscan.psnnotifier.model.PSPrice;
+import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -11,7 +12,10 @@ import java.io.IOException;
 
 public class PSPricesSite {
 
+    private static Logger logger = Logger.getLogger(PSPricesSite.class);
+
     public PSPrice processPSPrices(String id) throws IOException {
+        logger.debug("Processing id: " + id);
         Document doc = Jsoup.connect(Configuration.getInstance().getPsPricesUrl() + id).userAgent("Mozilla").get();
         Elements elements = doc.select(".content__game_card__offers").get(0).select("span");
 

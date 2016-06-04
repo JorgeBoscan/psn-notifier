@@ -23,7 +23,7 @@ import java.util.List;
 
 public class PSNNotifier {
 
-    static Logger logger = Logger.getLogger(PSNNotifier.class);
+    private static Logger logger = Logger.getLogger(PSNNotifier.class);
 
     public static void main(String args[]) throws IOException {
         String jsonData = Files.toString(new File(Configuration.getInstance().getDataJsonPath()), Charsets.UTF_8);
@@ -49,8 +49,7 @@ public class PSNNotifier {
             PSNStoreSite psnStoreSite = new PSNStoreSite();
             isFlashSale = psnStoreSite.processPSNStore();
         } catch (Exception e) {
-            e.printStackTrace();
-            // TODO
+            logger.error(e);
         }
         return isFlashSale;
     }
@@ -67,7 +66,7 @@ public class PSNNotifier {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            // TODO
+            logger.error(e);
         }
     }
 
@@ -87,7 +86,7 @@ public class PSNNotifier {
     }
 
     private static boolean fillGameData(Game game, PSPrice psPrice, boolean isNew) {
-        logger.info("Processing: " + psPrice.getGameName());
+        logger.info("Validating: " + psPrice.getGameName());
         boolean sendMessage = false;
         if (!isNew && PSNUtil.isBetterPrice(game.getLowestPrice(), psPrice.getPsplusPrice())) {
             game.setLowestPrice(PSNUtil.parsePrice(psPrice.getPsplusPrice()));
